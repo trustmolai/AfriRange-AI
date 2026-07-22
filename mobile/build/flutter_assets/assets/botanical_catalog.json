@@ -1,0 +1,69 @@
+[
+  {
+    "id": "plant_001",
+    "scientific_name": "Themeda triandra",
+    "common_names": {"en": "Red Grass", "af": "Rooigras", "zu": "Insinde", "st": "Seboku"},
+    "family": "Poaceae",
+    "plant_type": "grass",
+    "ecological_status": "Decreaser",
+    "palatability": "High",
+    "is_poisonous": false,
+    "toxicity_level": "None",
+    "is_invasive": false,
+    "management_advice": "Climax grass indicator of prime veld condition. High grazing value; maintain rotational rest period of 45-60 days."
+  },
+  {
+    "id": "plant_002",
+    "scientific_name": "Dichapetalum cymosum",
+    "common_names": {"en": "Poison Leaf / Gifblaar", "af": "Gifblaar"},
+    "family": "Dichapetalaceae",
+    "plant_type": "forb",
+    "ecological_status": "Invader",
+    "palatability": "Unpalatable",
+    "is_poisonous": true,
+    "toxicity_level": "Lethal",
+    "poison_category": "Cardiotoxic (Fluoroacetate)",
+    "is_invasive": false,
+    "management_advice": "LETHAL TO LIVESTOCK! Emerges early spring. Immediately fence off infested zone or apply approved selective spot herbicide."
+  },
+  {
+    "id": "plant_003",
+    "scientific_name": "Heteropogon contortus",
+    "common_names": {"en": "Spear Grass", "af": "Pylgras", "sw": "Kikuyu-mwitu"},
+    "family": "Poaceae",
+    "plant_type": "grass",
+    "ecological_status": "Increaser II",
+    "palatability": "Medium",
+    "is_poisonous": false,
+    "toxicity_level": "None",
+    "is_invasive": false,
+    "management_advice": "Palatable early season before awn development. Indicates moderate overgrazing pressure."
+  },
+  {
+    "id": "plant_004",
+    "scientific_name": "Vachellia karroo",
+    "common_names": {"en": "Sweet Thorn", "af": "Soetdoring", "zu": "Umunga"},
+    "family": "Fabaceae",
+    "plant_type": "tree",
+    "ecological_status": "Increaser I",
+    "palatability": "High",
+    "is_poisonous": false,
+    "toxicity_level": "None",
+    "is_invasive": false,
+    "management_advice": "Excellent browse for goats and game. Monitor for bush encroachment density exceeding 1000 stems/ha."
+  },
+  {
+    "id": "plant_005",
+    "scientific_name": "Lantana camara",
+    "common_names": {"en": "Tickberry / Lantana", "af": "Lantana"},
+    "family": "Verbenaceae",
+    "plant_type": "shrub",
+    "ecological_status": "Invader",
+    "palatability": "Unpalatable",
+    "is_poisonous": true,
+    "toxicity_level": "Severe",
+    "poison_category": "Hepatotoxic (Photosensitization)",
+    "is_invasive": true,
+    "management_advice": "Category 1b Invasive Weed. Causes severe liver damage and photosensitization in cattle. Eradicate immediately."
+  }
+]

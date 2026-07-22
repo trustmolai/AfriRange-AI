@@ -54,6 +54,8 @@ export function withAuth(handler: AuthenticatedHandler): ApiHandler {
   };
 }
 
+export const authenticateUser = withAuth;
+
 // -------------------------------------------------------------------
 // CORS Middleware
 // -------------------------------------------------------------------

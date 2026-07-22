@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:afrirange_ai/core/auth/auth_bloc.dart';
@@ -21,9 +22,17 @@ import 'package:afrirange_ai/features/auth/screens/account_and_settings_screen.d
 import 'package:afrirange_ai/core/network/connectivity_cubit.dart';
 import 'package:afrirange_ai/shared/widgets/afri_offline_banner.dart';
 import 'package:afrirange_ai/config/theme.dart';
+import 'package:sqflite_common_ffi_web/sqflite_ffi_web.dart';
+import 'package:sqflite/sqflite.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize web database factory when running on web
+  if (kIsWeb) {
+    databaseFactory = databaseFactoryFfiWeb;
+  }
+
   await AppDatabase.instance.init();
   
   final authRepository = AuthRepository();

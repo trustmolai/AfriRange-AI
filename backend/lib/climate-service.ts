@@ -92,8 +92,8 @@ export class ClimateService {
         farmId,
         observation.observationDate,
         observation.rainfallMm,
-        ],
-        observation.humid",
+        observation.temperatureC,
+        observation.humidityPercentage,
         observation.evapotranspirationMm,
         observation.dataSource
       ]

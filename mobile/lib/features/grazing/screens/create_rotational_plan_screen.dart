@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:afrirange_ai/features/grazing/services/grazing_api_service.dart';
-import 'package:afrirange_ai/features/paddock_mapping/models/paddock_model.dart';
-import 'package:date_field/date_field.dart';
+import 'package:afrirange_ai/features/paddock_mapping/models/grazing_zone_model.dart';
+import 'package:intl/intl.dart';
 
 class CreateRotationalPlanScreen extends StatefulWidget {
   const CreateRotationalPlanScreen({super.key});
@@ -17,7 +17,7 @@ class _CreateRotationalPlanScreenState extends State<CreateRotationalPlanScreen>
   String _planName = '';
   DateTime? _startDate;
   DateTime? _endDate;
-  List<PaddockModel> _availablePaddocks = [];
+  List<GrazingZoneModel> _availablePaddocks = [];
   List<dynamic> _selectedPaddocks = [];
   bool _isLoading = true;
   bool _isSaving = false;
@@ -37,42 +37,42 @@ class _CreateRotationalPlanScreenState extends State<CreateRotationalPlanScreen>
       // Load available paddocks for farm
       // In a real app, we'd call an API to get paddocks
       _availablePaddocks = [
-        PaddockModel(
+        GrazingZoneModel(
           id: 'paddock_1',
           farmId: 'farm_1',
           name: 'North Camp',
           areaHa: 150.0,
-          boundaryGeojson: '',
+          boundaryPoints: [],
           targetRestDays: 45,
           baselineLsuPerHa: 0.20,
           currentStatus: 'rested',
         ),
-        PaddockModel(
+        GrazingZoneModel(
           id: 'paddock_2',
           farmId: 'farm_1',
           name: 'South Camp',
           areaHa: 200.0,
-          boundaryGeojson: '',
+          boundaryPoints: [],
           targetRestDays: 45,
           baselineLsuPerHa: 0.20,
           currentStatus: 'rested',
         ),
-        PaddockModel(
+        GrazingZoneModel(
           id: 'paddock_3',
           farmId: 'farm_1',
           name: 'East Camp',
           areaHa: 120.0,
-          boundaryGeojson: '',
+          boundaryPoints: [],
           targetRestDays: 45,
           baselineLsuPerHa: 0.20,
           currentStatus: 'rested',
         ),
-        PaddockModel(
+        GrazingZoneModel(
           id: 'paddock_4',
           farmId: 'farm_1',
           name: 'West Camp',
           areaHa: 180.0,
-          boundaryGeojson: '',
+          boundaryPoints: [],
           targetRestDays: 45,
           baselineLsuPerHa: 0.20,
           currentStatus: 'rested',
@@ -88,7 +88,7 @@ class _CreateRotationalPlanScreenState extends State<CreateRotationalPlanScreen>
     }
   }
 
-  void _addPaddockToPlan(PaddockModel paddock) {
+  void _addPaddockToPlan(GrazingZoneModel paddock) {
     setState(() {
       // Check if already added
       final exists = _selectedPaddocks.any((p) => p['id'] == paddock.id);
@@ -161,6 +161,20 @@ class _CreateRotationalPlanScreenState extends State<CreateRotationalPlanScreen>
     }
   }
 
+  Future<DateTime?> _pickDate(BuildContext context, {DateTime? initialDate, DateTime? firstDate, DateTime? lastDate}) async {
+    return showDatePicker(
+      context: context,
+      initialDate: initialDate ?? DateTime.now(),
+      firstDate: firstDate ?? DateTime.now(),
+      lastDate: lastDate ?? DateTime.now().add(const Duration(days: 730)),
+    );
+  }
+
+  String _formatDate(DateTime? date) {
+    if (date == null) return 'Select date';
+    return DateFormat('yyyy-MM-dd').format(date);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -214,45 +228,50 @@ class _CreateRotationalPlanScreenState extends State<CreateRotationalPlanScreen>
                         Row(
                           children: [
                             Expanded(
-                              child: DateFormField(
-                                initialValue: DateTime.now(),
-                                firstDate: DateTime.now(),
-                                lastDate: DateTime.now().add(const Duration(days: 365)),
-                                decoration: const InputDecoration(
-                                  labelText: 'Start Date',
-                                  border: OutlineInputBorder(),
-                                ),
-                                mode: DateFieldPickerMode.date,
-                                onDateSelected: (date) => setState(() => _startDate = date),
-                                validator: (value) {
-                                  if (value == null) {
-                                    return 'Please select a start date';
+                              child: InkWell(
+                                onTap: () async {
+                                  final date = await _pickDate(
+                                    context,
+                                    initialDate: _startDate ?? DateTime.now(),
+                                    firstDate: DateTime.now(),
+                                    lastDate: DateTime.now().add(const Duration(days: 365)),
+                                  );
+                                  if (date != null) {
+                                    setState(() => _startDate = date);
                                   }
-                                  return null;
                                 },
+                                child: InputDecorator(
+                                  decoration: const InputDecoration(
+                                    labelText: 'Start Date',
+                                    border: OutlineInputBorder(),
+                                    suffixIcon: Icon(Icons.calendar_today),
+                                  ),
+                                  child: Text(_formatDate(_startDate)),
+                                ),
                               ),
                             ),
                             const SizedBox(width: 12),
                             Expanded(
-                              child: DateFormField(
-                                initialValue: DateTime.now().add(const Duration(days: 90)),
-                                firstDate: DateTime.now(),
-                                lastDate: DateTime.now().add(const Duration(days: 730)),
-                                decoration: const InputDecoration(
-                                  labelText: 'End Date',
-                                  border: OutlineInputBorder(),
-                                ),
-                                mode: DateFieldPickerMode.date,
-                                onDateSelected: (date) => setState(() => _endDate = date),
-                                validator: (value) {
-                                  if (value == null) {
-                                    return 'Please select an end date';
+                              child: InkWell(
+                                onTap: () async {
+                                  final date = await _pickDate(
+                                    context,
+                                    initialDate: _endDate ?? DateTime.now().add(const Duration(days: 90)),
+                                    firstDate: DateTime.now(),
+                                    lastDate: DateTime.now().add(const Duration(days: 730)),
+                                  );
+                                  if (date != null) {
+                                    setState(() => _endDate = date);
                                   }
-                                  if (_startDate != null && value!.isBefore(_startDate!)) {
-                                    return 'End date must be after start date';
-                                  }
-                                  return null;
                                 },
+                                child: InputDecorator(
+                                  decoration: const InputDecoration(
+                                    labelText: 'End Date',
+                                    border: OutlineInputBorder(),
+                                    suffixIcon: Icon(Icons.calendar_today),
+                                  ),
+                                  child: Text(_formatDate(_endDate)),
+                                ),
                               ),
                             ),
                           ],
@@ -307,28 +326,36 @@ class _CreateRotationalPlanScreenState extends State<CreateRotationalPlanScreen>
                                     children: [
                                       Text(
                                         'Area: ${paddock['areaHa']} ha',
-                                        style: TextStyle(fontSize: 12),
+                                        style: const TextStyle(fontSize: 12),
                                       ),
+                                      const SizedBox(height: 4),
                                       Row(
                                         children: [
                                           const Icon(Icons.calendar_today, size: 16),
                                           const SizedBox(width: 4),
                                           Expanded(
-                                            child: DateFormField(
-                                              initialValue: paddock['grazingStartDate'],
-                                              firstDate: _startDate,
-                                              lastDate: _endDate,
-                                              decoration: const InputDecoration(
-                                                labelText: 'Start',
-                                                border: OutlineInputBorder(),
-                                                contentPadding: EdgeInsets.all(8),
-                                              ),
-                                              mode: DateFieldPickerMode.date,
-                                              onDateSelected: (date) {
-                                                setState(() {
-                                                  paddock['grazingStartDate'] = date;
-                                                });
+                                            child: InkWell(
+                                              onTap: () async {
+                                                final date = await _pickDate(
+                                                  context,
+                                                  initialDate: paddock['grazingStartDate'] as DateTime? ?? _startDate,
+                                                  firstDate: _startDate,
+                                                  lastDate: _endDate,
+                                                );
+                                                if (date != null) {
+                                                  setState(() {
+                                                    paddock['grazingStartDate'] = date;
+                                                  });
+                                                }
                                               },
+                                              child: InputDecorator(
+                                                decoration: const InputDecoration(
+                                                  labelText: 'Start',
+                                                  border: OutlineInputBorder(),
+                                                  contentPadding: EdgeInsets.all(8),
+                                                ),
+                                                child: Text(_formatDate(paddock['grazingStartDate'] as DateTime?)),
+                                              ),
                                             ),
                                           ),
                                         ],
@@ -339,21 +366,28 @@ class _CreateRotationalPlanScreenState extends State<CreateRotationalPlanScreen>
                                           const Icon(Icons.calendar_today, size: 16),
                                           const SizedBox(width: 4),
                                           Expanded(
-                                            child: DateFormField(
-                                              initialValue: paddock['grazingEndDate'],
-                                              firstDate: _startDate,
-                                              lastDate: _endDate,
-                                              decoration: const InputDecoration(
-                                                labelText: 'End',
-                                                border: OutlineInputBorder(),
-                                                contentPadding: EdgeInsets.all(8),
-                                              ),
-                                              mode: DateFieldPickerMode.date,
-                                              onDateSelected: (date) {
-                                                setState(() {
-                                                  paddock['grazingEndDate'] = date;
-                                                });
+                                            child: InkWell(
+                                              onTap: () async {
+                                                final date = await _pickDate(
+                                                  context,
+                                                  initialDate: paddock['grazingEndDate'] as DateTime? ?? _endDate,
+                                                  firstDate: _startDate,
+                                                  lastDate: _endDate,
+                                                );
+                                                if (date != null) {
+                                                  setState(() {
+                                                    paddock['grazingEndDate'] = date;
+                                                  });
+                                                }
                                               },
+                                              child: InputDecorator(
+                                                decoration: const InputDecoration(
+                                                  labelText: 'End',
+                                                  border: OutlineInputBorder(),
+                                                  contentPadding: EdgeInsets.all(8),
+                                                ),
+                                                child: Text(_formatDate(paddock['grazingEndDate'] as DateTime?)),
+                                              ),
                                             ),
                                           ),
                                         ],
@@ -419,7 +453,8 @@ class _CreateRotationalPlanScreenState extends State<CreateRotationalPlanScreen>
                         ),
                       ],
                     ),
+                  ),
                 ),
-      );
-    }
+    );
   }
+}

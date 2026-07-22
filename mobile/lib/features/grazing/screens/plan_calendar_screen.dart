@@ -184,8 +184,8 @@ class _PlanCalendarScreenState extends State<PlanCalendarScreen> {
                             _focusedDay = focusedDay;
                           });
                         },
-                        calendarBuilders: CalendarBuilders(
-                          marker: (context, day, events) {
+                        calendarBuilders: CalendarBuilders<dynamic>(
+                          markerBuilder: (context, day, events) {
                             if (events.isEmpty) return null;
                             return Positioned(
                               right: 1,
@@ -194,7 +194,7 @@ class _PlanCalendarScreenState extends State<PlanCalendarScreen> {
                                 width: 8,
                                 height: 8,
                                 decoration: BoxDecoration(
-                                  color: events.first['color'] ?? Colors.blue,
+                                  color: (events.first as Map<String, dynamic>)['color'] ?? Colors.blue,
                                   shape: BoxShape.circle,
                                 ),
                               ),

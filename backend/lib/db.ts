@@ -23,7 +23,7 @@ export async function query<T = any>(text: string, params?: any[]): Promise<{ ro
     if (process.env.DEBUG_SQL === 'true') {
       console.log('Executed query:', { text, duration, rows: res.rowCount });
     }
-    return { rows: res.rows, rowCount: res.rowCount };
+    return { rows: res.rows, rowCount: res.rowCount ?? 0 };
   } catch (error) {
     console.error('Database query error:', error);
     throw error;

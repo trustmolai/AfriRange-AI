@@ -457,7 +457,7 @@ function getRecommendations(
   } else if (riskLevel === 'HIGH') {
     recs.push('• Prepare for potential livestock reductions (10-20%)');
     recs.push('• Identify alternative water sources and storage options');
-    regs.push('• Begin supplemental feeding preparations');
+    recs.push('• Begin supplemental feeding preparations');
     recs.push('• Review and update drought response plan');
   } else if (riskLevel === 'MODERATE') {
     recs.push('• Increase monitoring frequency to weekly');
@@ -472,23 +472,23 @@ function getRecommendations(
   
   // Add specific recommendations based on probabilities
   if (probabilities.forageShortage > 60) {
-    res.push('• Begin forage conservation: hay preparation and storage');
-    res.push('• Explore alternative feed sources (crop residues, browse)');
+    recs.push('• Begin forage conservation: hay preparation and storage');
+    recs.push('• Explore alternative feed sources (crop residues, browse)');
   }
   
   if (probabilities.waterStress > 60) {
-    res.push('• Inspect and repair water infrastructure immediately');
-    res.push('• Consider water harvesting and storage enhancement');
-    res.push('• Schedule water point maintenance before peak demand');
+    recs.push('• Inspect and repair water infrastructure immediately');
+    recs.push('• Consider water harvesting and storage enhancement');
+    recs.push('• Schedule water point maintenance before peak demand');
   }
   
   if (probabilities.heatStress > 60) {
-    res.push('• Modify grazing schedules to cooler hours (early morning/late evening)');
-    res.push('• Ensure adequate shade structures at water points and resting areas');
-    res.push('• Increase water point frequency during hot periods');
+    recs.push('• Modify grazing schedules to cooler hours (early morning/late evening)');
+    recs.push('• Ensure adequate shade structures at water points and resting areas');
+    recs.push('• Increase water point frequency during hot periods');
   }
   
-  return res.join('\n');
+  return recs.join('\n');
 }
 
 /**
@@ -499,7 +499,8 @@ export function generateEnhancedAlerts(
   probabilities: any,
   indices: ClimateIndices,
   vegData: any,
-  farmMetrics: any
+  farmMetrics: any,
+  currentClimate?: any
 ): AlertPayload[] {
   const alerts: AlertPayload[] = [];
   
@@ -544,16 +545,18 @@ export function generateEnhancedAlerts(
   }
   
   // Heat stress alert (enhanced with THI calculation)
-  const thi = 0.8 * currentClimate.temperatureC + (currentClimate.humidityPercentage / 100) * (currentClimate.temperatureC - 14.4) + 46.4;
-  if (thi >= 72) {
-    alerts.push({
-      alertType: 'heat_stress',
-      riskLevel: thi >= 84 ? 'severe' : thi >= 78 ? 'high' : 'moderate',
-      title: `HEAT STRESS ALERT: THI ${thi.toFixed(1)}`,
-      message: `Temperature-Humidity Index indicates ${getThreatLevel(thi)} heat stress risk. ` +
-               `Current conditions: ${currentClimate.temperatureC}°C, ${currentClimate.humidityPercentage}% humidity.`,
-      recommendedAction: getHeatRecommendations(thi)
-    });
+  if (currentClimate) {
+    const thi = 0.8 * currentClimate.temperatureC + (currentClimate.humidityPercentage / 100) * (currentClimate.temperatureC - 14.4) + 46.4;
+    if (thi >= 72) {
+      alerts.push({
+        alertType: 'heat_stress',
+        riskLevel: thi >= 84 ? 'severe' : thi >= 78 ? 'high' : 'moderate',
+        title: `HEAT STRESS ALERT: THI ${thi.toFixed(1)}`,
+        message: `Temperature-Humidity Index indicates ${getThreatLevel(thi)} heat stress risk. ` +
+                 `Current conditions: ${currentClimate.temperatureC}°C, ${currentClimate.humidityPercentage}% humidity.`,
+        recommendedAction: getHeatRecommendations(thi)
+      });
+    }
   }
   
   return alerts;
@@ -740,7 +743,7 @@ async function fetchAIEnhancedExplanation(
         max_tokens: 1500
       }),
     });
-    const completion = await resp.json();
+    const completion: any = await resp.json();
     return completion.choices?.[0]?.message?.content || 
            'Unable to generate enhanced AI explanation. Please try again later.';
   } catch (error) {

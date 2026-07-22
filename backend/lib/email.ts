@@ -35,6 +35,23 @@ export async function sendWelcomeEmail(to: string, name: string) {
 }
 
 /**
+ * Generic sendEmail function for billing and transactional emails
+ */
+export async function sendEmail({ to, subject, html }: { to: string; subject: string; html: string }) {
+  if (process.env.NODE_ENV === 'test' || resendApiKey === 're_mock_key') {
+    console.log(`[Mock Email] Email sent to ${to}. Subject: ${subject}`);
+    return { id: 'mock-id' };
+  }
+
+  return await resend.emails.send({
+    from: FROM_EMAIL,
+    to: [to],
+    subject,
+    html,
+  });
+}
+
+/**
  * Send email verification token
  */
 export async function sendVerificationEmail(to: string, token: string) {

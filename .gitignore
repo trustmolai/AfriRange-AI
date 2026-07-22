@@ -1,1 +1,10 @@
+.env
+*.env
+backend/.env
 .vercel
+node_modules/
+build/
+mobile/build/
+mobile/.dart_tool/
+mobile/android/.gradle/
+.gradle/

@@ -9,9 +9,20 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   AuthBloc({required this.repository}) : super(AuthInitial()) {
     on<CheckAuthEvent>(_onCheckAuth);
     on<LoginEvent>(_onLogin);
+    on<LoginDemoEvent>(_onLoginDemo);
     on<RegisterEvent>(_onRegister);
+    on<UpdateProfileEvent>(_onUpdateProfile);
     on<LogoutEvent>(_onLogout);
     on<DeleteAccountEvent>(_onDeleteAccount);
+  }
+
+  Future<void> _onUpdateProfile(UpdateProfileEvent event, Emitter<AuthState> emit) async {
+    try {
+      final updated = await repository.updateProfile(event.updatedUser);
+      emit(AuthAuthenticated(updated));
+    } catch (e) {
+      emit(AuthError(e.toString().replaceAll('Exception: ', '')));
+    }
   }
 
   Future<void> _onCheckAuth(CheckAuthEvent event, Emitter<AuthState> emit) async {
@@ -32,6 +43,16 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     emit(AuthAuthenticating());
     try {
       final user = await repository.login(event.email, event.password);
+      emit(AuthAuthenticated(user));
+    } catch (e) {
+      emit(AuthError(e.toString().replaceAll('Exception: ', '')));
+    }
+  }
+
+  Future<void> _onLoginDemo(LoginDemoEvent event, Emitter<AuthState> emit) async {
+    emit(AuthAuthenticating());
+    try {
+      final user = await repository.loginDemo();
       emit(AuthAuthenticated(user));
     } catch (e) {
       emit(AuthError(e.toString().replaceAll('Exception: ', '')));

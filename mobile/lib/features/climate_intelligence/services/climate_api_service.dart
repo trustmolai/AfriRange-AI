@@ -1,9 +1,8 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import '../models/climate_model.dart';
-import '../models/drought_forecast_model.dart';
-import '../models/climate_alert_model.dart';
-import '../../config/env.dart';
+import '../models/climate_models.dart';
+import '../../../config/env.dart';
+
 import '../../../core/database/app_database.dart';
 
 class ClimateApiService {

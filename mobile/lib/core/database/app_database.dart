@@ -593,4 +593,10 @@ class AppDatabase {
     final db = await database;
     return await db.delete('sync_queue', where: 'id = ?', whereArgs: [id]);
   }
+
+  Future<int> getPendingSyncCount() async {
+    final db = await database;
+    final result = await db.rawQuery('SELECT COUNT(*) as count FROM sync_queue');
+    return Sqflite.firstIntValue(result) ?? 0;
+  }
 }

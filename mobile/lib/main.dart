@@ -8,13 +8,7 @@ import 'package:afrirange_ai/core/auth/auth_repository.dart';
 import 'package:afrirange_ai/core/database/app_database.dart';
 import 'package:afrirange_ai/features/auth/screens/login_screen.dart';
 import 'package:afrirange_ai/features/auth/screens/register_screen.dart';
-import 'package:afrirange_ai/features/grazing/screens/vegetation_dashboard_screen.dart';
-import 'package:afrirange_ai/features/grazing/screens/recommendation_dashboard_screen.dart';
-import 'package:afrirange_ai/features/grazing/screens/zone_comparison_screen.dart';
-import 'package:afrirange_ai/features/grazing/screens/recommendation_detail_screen.dart';
-import 'package:afrirange_ai/features/grazing/screens/rotational_plans_screen.dart';
-import 'package:afrirange_ai/features/grazing/screens/create_rotational_plan_screen.dart';
-import 'package:afrirange_ai/features/grazing/screens/plan_calendar_screen.dart';
+import 'package:afrirange_ai/features/home/home_dashboard_screen.dart';
 import 'package:afrirange_ai/features/paddock_mapping/paddock_map_screen.dart';
 import 'package:afrirange_ai/features/plant_id/plant_scanner_screen.dart';
 import 'package:afrirange_ai/features/livestock/screens/stocking_dashboard_screen.dart';
@@ -122,11 +116,10 @@ class _MainNavigationWrapperState extends State<MainNavigationWrapper> {
   int _currentIndex = 0;
 
   final List<Widget> _screens = [
+    const HomeDashboardScreen(),
     const PaddockMapScreen(),
     const PlantScannerScreen(),
     const StockingDashboardScreen(),
-    const VegetationDashboardScreen(),
-    const RecommendationDashboardScreen(),
     const AccountAndSettingsScreen(),
   ];
 
@@ -160,6 +153,11 @@ class _MainNavigationWrapperState extends State<MainNavigationWrapper> {
         },
         destinations: const [
           NavigationDestination(
+            icon: Icon(Icons.home_outlined),
+            selectedIcon: Icon(Icons.home),
+            label: 'Home',
+          ),
+          NavigationDestination(
             icon: Icon(Icons.map_outlined),
             selectedIcon: Icon(Icons.map),
             label: 'Paddocks',
@@ -170,19 +168,9 @@ class _MainNavigationWrapperState extends State<MainNavigationWrapper> {
             label: 'Plant AI',
           ),
           NavigationDestination(
-            icon: Icon(Icons.eco_outlined),
-            selectedIcon: Icon(Icons.eco),
+            icon: Icon(Icons.pets_outlined),
+            selectedIcon: Icon(Icons.pets),
             label: 'Livestock',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.grass_outlined),
-            selectedIcon: Icon(Icons.grass),
-            label: 'Vegetation',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.timeline_outlined),
-            selectedIcon: Icon(Icons.timeline),
-            label: 'Grazing',
           ),
           NavigationDestination(
             icon: Icon(Icons.settings_outlined),

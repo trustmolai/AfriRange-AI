@@ -8,9 +8,6 @@ class AlertDetailScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // In a real app, we would fetch the alert details using alertId
-    // For now, showing placeholder data
-    
     return Scaffold(
       appBar: AppBar(
         title: const Text('Alert Details'),
@@ -28,23 +25,13 @@ class AlertDetailScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Alert Header
               _buildAlertHeader(),
-              
               const SizedBox(height: 24),
-              
-              // Alert Details
               _buildAlertDetailsSection(),
-              
               const SizedBox(height: 24),
-              
-              // Recommended Actions
               _buildRecommendationsSection(),
-              
               const SizedBox(height: 24),
-              
-              // Acknowledgement Section
-              _buildAcknowledgementSection(),
+              _buildAcknowledgementSection(context),
             ],
           ),
         ),
@@ -168,15 +155,15 @@ class AlertDetailScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Row(
+            Row(
               children: [
                 Icon(
                   Icons.lightbulb_outline,
                   size: 24,
                   color: Colors.blue[700],
                 ),
-                SizedBox(width: 12),
-                Text(
+                const SizedBox(width: 12),
+                const Text(
                   'Recommended Actions',
                   style: TextStyle(
                     fontSize: 16,
@@ -256,24 +243,23 @@ class AlertDetailScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildAcknowledgementSection() {
+  Widget _buildAcknowledgementSection(BuildContext context) {
     return Card(
       elevation: 2,
       child: Padding(
-Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Padding(
-            padding: EdgeInsets.all(16),
-            child: Row(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
               children: [
                 Icon(
                   Icons.check_circle_outline,
                   size: 24,
                   color: Colors.green[700],
                 ),
-                SizedBox(width: 12),
-                Text(
+                const SizedBox(width: 12),
+                const Text(
                   'Acknowledge Alert',
                   style: TextStyle(
                     fontSize: 16,
@@ -282,11 +268,8 @@ Column(
                 ),
               ],
             ),
-          ),
-          const Divider(height: 16),
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16),
-            child: Text(
+            const Divider(height: 16),
+            Text(
               'Acknowledging this alert indicates that you have reviewed the information '
               'and understand the recommended actions. This does not imply that all '
               'actions have been completed, but rather that you are aware of the situation '
@@ -296,33 +279,30 @@ Column(
                 color: Colors.grey[600],
               ),
             ),
-          ),
-          const SizedBox(height: 16),
-          Align(
-            alignment: Alignment.centerRight,
-            child: ElevatedButton.icon(
-              onPressed: () {
-                // Acknowledge the alert
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Alert acknowledged successfully'),
-                    backgroundColor: Colors.green,
-                  ),
-                );
-                // In a real app, we would call the API to acknowledge
-                Navigator.of(context).pop();
-              },
-              icon: const Icon(Icons.check),
-              label: const Text('ACKNOWLEDGE ALERT'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.green,
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 24, vertical: 12),
+            const SizedBox(height: 16),
+            Align(
+              alignment: Alignment.centerRight,
+              child: ElevatedButton.icon(
+                onPressed: () {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Alert acknowledged successfully'),
+                      backgroundColor: Colors.green,
+                    ),
+                  );
+                  Navigator.of(context).pop();
+                },
+                icon: const Icon(Icons.check),
+                label: const Text('ACKNOWLEDGE ALERT'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.green,
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 24, vertical: 12),
+                ),
               ),
             ),
-          ),
-          const SizedBox(height: 16),
-        ],
+          ],
+        ),
       ),
     );
   }

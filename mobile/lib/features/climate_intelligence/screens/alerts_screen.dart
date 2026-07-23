@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 class AlertsScreen extends StatelessWidget {
   const AlertsScreen({Key? key}) : super(key: key);
@@ -43,13 +42,7 @@ class AlertsScreen extends StatelessWidget {
         onRefresh: () async {
           // Refresh alerts
         },
-        child: Consumer<ClimateApiService>(
-          builder: (context, climateService, _) {
-            // In a real implementation, we would fetch alerts here
-            // For now, showing placeholder
-            return _buildAlertsList(context);
-          },
-        ),
+        child: _buildAlertsList(context),
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
@@ -65,46 +58,50 @@ class AlertsScreen extends StatelessWidget {
     return Column(
       children: [
         // Summary stats
-        _buildAlertSummary(),
+        _buildAlertSummary(context),
         const SizedBox(height: 16),
-        
+
         // Alerts list
         Expanded(
           child: ListView(
             children: [
               _buildAlertCard(
+                context,
                 'DROUGHT ALERT: MODERATE RISK',
                 'Multi-index assessment indicates moderate drought risk (Score: 52/100). '
                 'SPI-3: -0.6, Vegetation stress detected.',
                 'Drought',
                 'moderate',
-                false, // not acknowledged
+                false,
                 DateTime.now().subtract(const Duration(hours: 3)),
               ),
               _buildAlertCard(
+                context,
                 'WATER STRESS ALERT: HIGH RISK',
                 'Combined hydrological indicators show elevated water stress risk. '
                 'Hydroclimatic Index: 0.8 (optimal >1.5).',
                 'Water Stress',
                 'high',
-                true, // acknowledged
+                true,
                 DateTime.now().subtract(const Duration(days: 1)),
               ),
               _buildAlertCard(
+                context,
                 'HEAT STRESS ALERT: MODERATE RISK',
                 'Temperature-Humidity Index: 75.2 indicates moderate heat stress risk.',
                 'Heat Stress',
                 'moderate',
-                false, // not acknowledged
+                false,
                 DateTime.now().subtract(const Duration(hours: 12)),
               ),
               _buildAlertCard(
+                context,
                 'FORAGE ALERT: 35 DAYS REMAINING',
                 'Based on current biomass levels and livestock density, '
                 'projected forage depletion in 35 days.',
                 'Forage Shortage',
                 'high',
-                false, // not acknowledged
+                false,
                 DateTime.now().subtract(const Duration(days: 2)),
               ),
             ],
@@ -114,7 +111,7 @@ class AlertsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildAlertSummary() {
+  Widget _buildAlertSummary(BuildContext context) {
     return Card(
       elevation: 2,
       child: Padding(
@@ -122,16 +119,16 @@ class AlertsScreen extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            _buildStatBox('Total Alerts', '4', Icons.notifications),
-            _buildStatBox('Unacknowledged', '3', Icons.notifications_active),
-            _buildStatBox('Critical', '0', Icons.priority_high),
+            _buildStatBox(context, 'Total Alerts', '4', Icons.notifications),
+            _buildStatBox(context, 'Unacknowledged', '3', Icons.notifications_active),
+            _buildStatBox(context, 'Critical', '0', Icons.priority_high),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildStatBox(String label, String value, IconData icon) {
+  Widget _buildStatBox(BuildContext context, String label, String value, IconData icon) {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -156,6 +153,7 @@ class AlertsScreen extends StatelessWidget {
   }
 
   Widget _buildAlertCard(
+    BuildContext context,
     String title,
     String message,
     String type,
@@ -163,40 +161,39 @@ class AlertsScreen extends StatelessWidget {
     bool isAcknowledged,
     DateTime timestamp,
   ) {
-    // Determine colors based on risk level
     Color borderColor;
     Color bgColor;
     IconData icon;
-    
+
     switch (type.toLowerCase()) {
       case 'drought':
         borderColor = Colors.orange;
-        bgColor = Colors.orange.withOpacity(0.1);
+        bgColor = Colors.orange.withValues(alpha: 0.1);
         icon = Icons.water_drop;
         break;
-      case 'water_stress':
+      case 'water stress':
         borderColor = Colors.blue;
-        bgColor = Colors.blue.withOpacity(0.1);
+        bgColor = Colors.blue.withValues(alpha: 0.1);
         icon = Icons.opacity;
         break;
-      case 'heat_stress':
+      case 'heat stress':
         borderColor = Colors.red;
-        bgColor = Colors.red.withOpacity(0.1);
+        bgColor = Colors.red.withValues(alpha: 0.1);
         icon = Icons.ac_unit;
         break;
-      case 'forage_shortage':
+      case 'forage shortage':
         borderColor = Colors.green;
-        bgColor = Colors.green.withOpacity(0.1);
+        bgColor = Colors.green.withValues(alpha: 0.1);
         icon = Icons.grass;
         break;
       default:
         borderColor = Colors.grey;
-        bgColor = Colors.grey.withOpacity(0.1);
+        bgColor = Colors.grey.withValues(alpha: 0.1);
         icon = Icons.notifications;
     }
-    
+
     Color statusColor = isAcknowledged ? Colors.green : Colors.orange;
-    
+
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
       elevation: 2,
@@ -229,7 +226,7 @@ class AlertsScreen extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(
                     horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
-                  color: statusColor.withOpacity(0.2),
+                  color: statusColor.withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(
@@ -301,7 +298,7 @@ class AlertsScreen extends StatelessWidget {
   String _formatTimeAgo(DateTime date) {
     final now = DateTime.now();
     final difference = now.difference(date);
-    
+
     if (difference.inSeconds < 60) {
       return '${difference.inSeconds} seconds ago';
     } else if (difference.inMinutes < 60) {

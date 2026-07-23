@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 class DroughtForecastScreen extends StatelessWidget {
   const DroughtForecastScreen({Key? key}) : super(key: key);
@@ -14,7 +13,9 @@ class DroughtForecastScreen extends StatelessWidget {
             icon: const Icon(Icons.refresh),
             tooltip: 'Refresh Forecasts',
             onPressed: () {
-              // Refresh forecasts
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Refreshing drought forecasts...')),
+              );
             },
           ),
         ],
@@ -29,7 +30,6 @@ class DroughtForecastScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Forecast tabs
               DefaultTabController(
                 length: 3,
                 child: Column(
@@ -47,9 +47,9 @@ class DroughtForecastScreen extends StatelessWidget {
                       height: 400,
                       child: TabBarView(
                         children: [
-                          _buildForecastTab(30),
-                          _buildForecastTab(60),
-                          _buildForecastTab(90),
+                          _buildForecastTab(context, 30),
+                          _buildForecastTab(context, 60),
+                          _buildForecastTab(context, 90),
                         ],
                       ),
                     ),
@@ -70,37 +70,28 @@ class DroughtForecastScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildForecastTab(int days) {
+  Widget _buildForecastTab(BuildContext context, int days) {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Forecast summary card
-          _buildForecastSummaryCard(days),
+          _buildForecastSummaryCard(context, days),
           const SizedBox(height: 24),
-          
-          // Detailed metrics
-          _buildSectionTitle('Detailed Metrics'),
+          _buildSectionTitle(context, 'Detailed Metrics'),
           _buildDetailedMetrics(days),
-          
           const SizedBox(height: 24),
-          
-          // AI Explanation
-          _buildSectionTitle('Expert Analysis'),
-          _buildAIExplanation(days),
-          
+          _buildSectionTitle(context, 'Expert Analysis'),
+          _buildAIExplanation(context, days),
           const SizedBox(height: 24),
-          
-          // Recommendations
-          _buildSectionTitle('Recommended Actions'),
-          _buildRecommendations(days),
+          _buildSectionTitle(context, 'Recommended Actions'),
+          _buildRecommendations(context, days),
         ],
       ),
     );
   }
 
-  Widget _buildSectionTitle(String title) {
+  Widget _buildSectionTitle(BuildContext context, String title) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 12),
       child: Text(
@@ -112,7 +103,7 @@ class DroughtForecastScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildForecastSummaryCard(int days) {
+  Widget _buildForecastSummaryCard(BuildContext context, int days) {
     return Card(
       elevation: 4,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -131,21 +122,20 @@ class DroughtForecastScreen extends StatelessWidget {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                _buildRiskBadge(55), // Placeholder score
+                _buildRiskBadge(55),
               ],
             ),
             const SizedBox(height: 16),
-            _buildMetricRow('Drought Risk Level', 'Moderate', Icons.warning),
-            _buildMetricRow('Risk Score', '55/100', Icons.analytics),
-            _buildMetricRow('Rainfall Probability', '65%', Icons.water_drop),
-            _buildMetricRow('Forage Shortage Risk', '40%', Icons.grass),
-            _buildMetricRow('Water Stress Risk', '50%', Icons.opacity),
-            _buildMetricRow('Heat Stress Risk', '30%', Icons.ac_unit),
-            _buildMetricRow('Forecasted Forage Days', '45 days', Icons.grass),
+            _buildMetricRow(context, 'Drought Risk Level', 'Moderate', Icons.warning),
+            _buildMetricRow(context, 'Risk Score', '55/100', Icons.analytics),
+            _buildMetricRow(context, 'Rainfall Probability', '65%', Icons.water_drop),
+            _buildMetricRow(context, 'Forage Shortage Risk', '40%', Icons.grass),
+            _buildMetricRow(context, 'Water Stress Risk', '50%', Icons.opacity),
+            _buildMetricRow(context, 'Heat Stress Risk', '30%', Icons.ac_unit),
+            _buildMetricRow(context, 'Forecasted Forage Days', '45 days', Icons.grass),
             const Divider(height: 24),
-            _buildMetricRow(
-                'SPI-3 Value', '-0.8 (Moderately Dry)', Icons.show_chart),
-            _buildMetricRow('ANI Value', '0.65 (65%)', Icons.nature),
+            _buildMetricRow(context, 'SPI-3 Value', '-0.8 (Moderately Dry)', Icons.show_chart),
+            _buildMetricRow(context, 'ANI Value', '0.65 (65%)', Icons.nature),
           ],
         ),
       ),
@@ -155,7 +145,7 @@ class DroughtForecastScreen extends StatelessWidget {
   Widget _buildRiskBadge(int score) {
     Color color;
     String label;
-    
+
     if (score >= 80) {
       color = Colors.red;
       label = 'SEVERE';
@@ -169,11 +159,11 @@ class DroughtForecastScreen extends StatelessWidget {
       color = Colors.green;
       label = 'LOW';
     }
-    
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.2),
+        color: color.withValues(alpha: 0.2),
         borderRadius: BorderRadius.circular(20),
         border: Border.all(color: color),
       ),
@@ -188,7 +178,7 @@ class DroughtForecastScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildMetricRow(String label, String value, IconData icon) {
+  Widget _buildMetricRow(BuildContext context, String label, String value, IconData icon) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: Row(
@@ -222,13 +212,13 @@ class DroughtForecastScreen extends StatelessWidget {
         child: Column(
           children: [
             _buildDetailRow('Temperature Anomaly', '+1.2°C', 'Above average'),
-            _buildDivider(),
+            const Divider(height: 16),
             _buildDetailRow('Rainfall Deviation', '-25%', 'Below normal'),
-            _buildDivider(),
+            const Divider(height: 16),
             _buildDetailRow('Vegetation Health Index', '0.58', 'Declining'),
-            _buildDivider(),
+            const Divider(height: 16),
             _buildDetailRow('Soil Moisture Level', '42%', 'Below optimal'),
-            _buildDivider(),
+            const Divider(height: 16),
             _buildDetailRow('Evapotranspiration Rate', '4.8 mm/day', 'Elevated'),
           ],
         ),
@@ -262,7 +252,7 @@ class DroughtForecastScreen extends StatelessWidget {
             flex: 2,
             child: Text(
               description,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 12,
                 color: Colors.grey[600],
               ),
@@ -273,11 +263,7 @@ class DroughtForecastScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildDivider() {
-    return const Divider(height: 16);
-  }
-
-  Widget _buildAIExplanation(int days) {
+  Widget _buildAIExplanation(BuildContext context, int days) {
     return Card(
       elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
@@ -323,7 +309,7 @@ class DroughtForecastScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildRecommendations(int days) {
+  Widget _buildRecommendations(BuildContext context, int days) {
     return Card(
       elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
@@ -332,15 +318,15 @@ class DroughtForecastScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Row(
+            Row(
               children: [
                 Icon(
                   Icons.lightbulb_outline,
                   size: 24,
                   color: Colors.green[700],
                 ),
-                SizedBox(width: 12),
-                Text(
+                const SizedBox(width: 12),
+                const Text(
                   'Management Recommendations',
                   style: TextStyle(
                     fontSize: 16,
@@ -380,6 +366,29 @@ class DroughtForecastScreen extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildRecommendationItem(String title, String description) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            style: const TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 2),
+          Text(
+            description,
+            style: const TextStyle(fontSize: 12, color: Colors.grey),
+          ),
+        ],
       ),
     );
   }

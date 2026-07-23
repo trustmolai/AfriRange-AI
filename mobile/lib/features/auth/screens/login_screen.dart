@@ -26,6 +26,13 @@ class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
 
   @override
+  void initState() {
+    super.initState();
+    _emailController.text = 'farmer@afrirange.ai';
+    _passwordController.text = 'password123';
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
@@ -97,6 +104,24 @@ class _LoginScreenState extends State<LoginScreen> {
                           );
                         }
                       },
+                    ),
+                    const SizedBox(height: 12),
+                    OutlinedButton.icon(
+                      onPressed: isLoading
+                          ? null
+                          : () {
+                              context.read<AuthBloc>().add(LoginDemoEvent());
+                            },
+                      icon: const Icon(Icons.explore_outlined, color: Color(0xFF2E7D32)),
+                      label: const Text(
+                        'EXPLORE AS GUEST / DEMO MODE',
+                        style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF2E7D32)),
+                      ),
+                      style: OutlinedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        side: const BorderSide(color: Color(0xFF2E7D32), width: 1.5),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      ),
                     ),
                     const SizedBox(height: 16),
                     Row(

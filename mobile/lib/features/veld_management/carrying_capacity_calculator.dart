@@ -1,5 +1,33 @@
 import 'package:flutter/material.dart';
 
+class CarryingCapacityCalculator {
+  static double calculateVcs({
+    required double decreaserPct,
+    required double increaserIIPct,
+    required double toxicInvaderPct,
+  }) {
+    final increaserIPct = (100.0 - decreaserPct - increaserIIPct - toxicInvaderPct).clamp(0.0, 100.0);
+    final rawVcs = (decreaserPct * 1.0) + (increaserIPct * 0.7) + (increaserIIPct * 0.4) - (toxicInvaderPct * 1.5);
+    return rawVcs.clamp(0.0, 100.0);
+  }
+
+  static double calculateLsuPerHa({
+    required double vcs,
+    required double ndvi,
+  }) {
+    final ndviMultiplier = ndvi >= 0.55 ? 1.25 : (ndvi >= 0.35 ? 1.00 : 0.60);
+    final vcsMultiplier = vcs / 50.0;
+    return (0.20 * vcsMultiplier * ndviMultiplier).clamp(0.05, 0.60);
+  }
+
+  static int calculateRestDays(double vcs) {
+    if (vcs < 40.0) return 75;
+    if (vcs < 65.0) return 45;
+    return 30;
+  }
+}
+
+
 class VeldIntelligenceScreen extends StatefulWidget {
   const VeldIntelligenceScreen({super.key});
 
@@ -28,26 +56,19 @@ class _VeldIntelligenceScreenState extends State<VeldIntelligenceScreen> {
 
   void _recalculateVeldMetrics() {
     setState(() {
-      // Ecological Veld Condition Score (VCS) formula:
-      // VCS = (Decreaser% * 1.0) + (Increaser I% * 0.7) + (Increaser II% * 0.4) - (ToxicInvader% * 1.5)
-      double rawVcs = (_decreaserPct * 1.0) + ((100 - _decreaserPct - _increaserIIPct - _toxicInvaderPct) * 0.7) + (_increaserIIPct * 0.4) - (_toxicInvaderPct * 1.5);
-      _calculatedVcs = rawVcs.clamp(0.0, 100.0);
+      _calculatedVcs = CarryingCapacityCalculator.calculateVcs(
+        decreaserPct: _decreaserPct,
+        increaserIIPct: _increaserIIPct,
+        toxicInvaderPct: _toxicInvaderPct,
+      );
 
-      // Baseline Carrying Capacity multiplier for African Veld: ~ 0.20 LSU/ha at 50% VCS
-      double ndviMultiplier = _baselineNdvi >= 0.55 ? 1.25 : (_baselineNdvi >= 0.35 ? 1.00 : 0.60);
-      double vcsMultiplier = _calculatedVcs / 50.0;
+      _recommendedLsuPerHa = CarryingCapacityCalculator.calculateLsuPerHa(
+        vcs: _calculatedVcs,
+        ndvi: _baselineNdvi,
+      );
 
-      _recommendedLsuPerHa = (0.20 * vcsMultiplier * ndviMultiplier).clamp(0.05, 0.60);
       _recommendedHerdSizeLsu = (_recommendedLsuPerHa * _paddockAreaHa).round();
-
-      // Recommended rest duration increases if overgrazed indicators are high
-      if (_calculatedVcs < 40.0) {
-        _recommendedRestDays = 75; // Severe rest needed
-      } else if (_calculatedVcs < 65.0) {
-        _recommendedRestDays = 45; // Standard rest
-      } else {
-        _recommendedRestDays = 30; // Fast rotation in prime condition
-      }
+      _recommendedRestDays = CarryingCapacityCalculator.calculateRestDays(_calculatedVcs);
     });
   }
 

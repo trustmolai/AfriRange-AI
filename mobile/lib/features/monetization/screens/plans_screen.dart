@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
+import '../../../core/auth/auth_bloc.dart';
+import '../../../core/auth/models/auth_state.dart';
 import '../services/billing_api_service.dart';
 import '../models/monetization_models.dart';
 
@@ -159,7 +162,7 @@ class _PlansScreenState extends State<PlansScreen> {
                                   Text(
                                     plan.monthlyPrice == 0
                                         ? 'Free'
-                                        : '\$${plan.monthlyPrice.toStringAsFixed(2)} / mo',
+                                        : _formatCurrency(context, plan.monthlyPrice),
                                     style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.green),
                                   ),
                                 ],
@@ -202,5 +205,50 @@ class _PlansScreenState extends State<PlansScreen> {
                   ],
                 ),
     );
+  }
+
+  String _formatCurrency(BuildContext context, double baseUsdPrice) {
+    try {
+      final authState = context.read<AuthBloc>().state;
+      if (authState is AuthAuthenticated) {
+        final currency = authState.user.currency;
+        final symbol = authState.user.currencySymbol;
+        double rate = 1.0;
+
+        switch (currency) {
+          case 'ZAR':
+            rate = 18.5;
+            break;
+          case 'KES':
+            rate = 130.0;
+            break;
+          case 'NGN':
+            rate = 1450.0;
+            break;
+          case 'BWP':
+            rate = 13.6;
+            break;
+          case 'NAD':
+            rate = 18.5;
+            break;
+          case 'ZWG':
+            rate = 26.5;
+            break;
+          case 'GHS':
+            rate = 15.2;
+            break;
+          case 'USD':
+          default:
+            rate = 1.0;
+        }
+
+        final converted = baseUsdPrice * rate;
+        if (rate > 50) {
+          return '$symbol ${converted.toStringAsFixed(0)} / mo';
+        }
+        return '$symbol ${converted.toStringAsFixed(2)} / mo';
+      }
+    } catch (_) {}
+    return '\$${baseUsdPrice.toStringAsFixed(2)} / mo';
   }
 }

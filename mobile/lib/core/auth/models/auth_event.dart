@@ -1,3 +1,5 @@
+import 'user_model.dart';
+
 abstract class AuthEvent {
   const AuthEvent();
 }
@@ -20,3 +22,11 @@ class RegisterEvent extends AuthEvent {
 class LogoutEvent extends AuthEvent {}
 
 class DeleteAccountEvent extends AuthEvent {}
+
+class LoginDemoEvent extends AuthEvent {}
+
+class UpdateProfileEvent extends AuthEvent {
+  final UserModel updatedUser;
+  const UpdateProfileEvent(this.updatedUser);
+}
+
